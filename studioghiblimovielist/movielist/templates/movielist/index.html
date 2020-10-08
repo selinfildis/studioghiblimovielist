@@ -1,1 +1,37 @@
-<h1>YES</h1>
+
+<div class="container">
+    {{ refresh }}
+    <table class="responsive-table">
+        <caption><h1>Studio Ghilbi Films</h1></caption>
+        <thead>
+        <tr>
+            <th scope="col">Film Title</th>
+            <th scope="col">Description</th>
+            <th scope="col">Director</th>
+            <th scope="col">Producer</th>
+            <th scope="col">Release Date</th>
+            <th scope="col">RT Score</th>
+            <th scope="col">People</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for film in films %}
+            <tr>
+                <th scope="row">{{film.title}}</th>
+                <td data-title="Description">{{film.description}}</td>
+                <td data-title="Director">{{film.director}}</td>
+                <td data-title="Producer">{{film.producer}}</td>
+                <td data-title="Release Date">{{film.release_date}}</td>
+                <td data-title="RT Score">{{film.rt_score}}</td>
+                <td data-title="People">
+                    <ul>
+                        {% for person in film.people %}
+                            <li>{{ person.name }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
