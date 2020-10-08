@@ -9,10 +9,10 @@ services:
     command: sh web-start.sh
     volumes:
       - ${PWD}:/usr/src/studioghiblimovielist
-    ports:
-      - 8000:8000
     depends_on:
       - redis
+    networks:
+      - nginx_network
   redis:
     image: redis:latest
     ports:
@@ -20,3 +20,18 @@ services:
     volumes:
       - ./config/redis.conf:/redis.conf
     command: [ "redis-server", "/redis.conf" ]
+    networks:  # <-- here
+      - nginx_network
+  nginx:
+    image: nginx:1.13
+    ports:
+      - 8000:80
+    volumes:
+      - ./config/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - web
+    networks:  # <-- here
+      - nginx_network
+networks:  # <-- and here
+  nginx_network:
+    driver: bridge

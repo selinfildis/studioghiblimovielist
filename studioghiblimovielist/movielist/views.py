@@ -12,6 +12,6 @@ class Index(View):
         template = loader.get_template('movielist/index.html')
         context = {
             'films': get_films_and_people(),
-            'refresh': random.random()
+            # 'refresh': random.random() For testing purposes
         }
         return HttpResponse(template.render(context, request))
