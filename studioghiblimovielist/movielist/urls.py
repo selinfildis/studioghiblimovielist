@@ -5,8 +5,8 @@ from django.views.decorators.cache import cache_page
 
 from . import views
 
-CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
+CACHE_TTL = getattr(settings, "CACHE_TTL", DEFAULT_TIMEOUT)
 
 urlpatterns = [
-    path('', cache_page(CACHE_TTL)(views.Index.as_view()), name='index'),
+    path("", cache_page(CACHE_TTL)(views.Index.as_view()), name="index"),
 ]
