@@ -5,14 +5,17 @@ services:
     environment:
         - PYTHONUNBUFFERED=1
         - REDIS_CACHE=redis://redis:6379/1
+        - DB_CONN=postgresql://api:devpass@postgres:5432/api
     working_dir: /usr/src/studioghiblimovielist
     command: sh web-start.sh
     volumes:
-      - ${PWD}:/usr/src/studioghiblimovielist
+      - ${PWD}/studioghiblimovielist:/usr/src/studioghiblimovielist
     depends_on:
       - redis
     networks:
       - nginx_network
+    ports:
+      - 8001:8000
   redis:
     image: redis:latest
     ports:
@@ -30,6 +33,46 @@ services:
       - ./config/nginx/conf.d:/etc/nginx/conf.d
     depends_on:
       - web
+    networks:  # <-- here
+      - nginx_network
+  celery:
+    image: python:3.7
+    environment:
+        - PYTHONUNBUFFERED=1
+        - REDIS_CACHE=redis://redis:6379/1
+        - DB_CONN=postgresql://api:devpass@postgres:5432/api
+    working_dir: /usr/src/studioghiblimovielist
+    command: sh celery-start.sh
+    volumes:
+      - ${PWD}/studioghiblimovielist:/usr/src/studioghiblimovielist
+    depends_on:
+      - redis
+    networks:  # <-- here
+      - nginx_network
+  celery-beat:
+    image: python:3.7
+    environment:
+        - PYTHONUNBUFFERED=1
+        - REDIS_CACHE=redis://redis:6379/1
+        - DB_CONN=postgresql://api:devpass@postgres:5432/api
+    working_dir: /usr/src/studioghiblimovielist
+    command: sh celery-beat-start.sh
+    volumes:
+      - ${PWD}/studioghiblimovielist:/usr/src/studioghiblimovielist
+    depends_on:
+      - redis
+    networks:  # <-- here
+      - nginx_network
+  postgres:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - PGDATA='/var/lib/postgresql/data/pgdata'
+      - POSTGRES_USER=api
+      - POSTGRES_PASSWORD=devpass # different in prod
+      - POSTGRES_DB=api
     networks:  # <-- here
       - nginx_network
 networks:  # <-- and here

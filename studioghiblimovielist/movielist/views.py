@@ -1,17 +1,22 @@
-import random
-
 from django.http import HttpResponse
 from django.template import loader
-from django.views import View
+from rest_framework.generics import ListAPIView
 
-from .helpers import get_films_and_people
+from movielist.models import Film
+from movielist.serializers import FilmSerializer
+import random
 
 
-class Index(View):
+class Index(ListAPIView):
+    queryset = Film.objects.all().order_by("-release_date")
+    serializer_class = FilmSerializer
+
     def get(self, request):
+        print("aaaaa")
+        print("hello")
+        print(random.random())
         template = loader.get_template("movielist/index.html")
         context = {
-            "films": get_films_and_people(),
-            # 'refresh': random.random() For testing purposes
+            "films": self.list(request).data,
         }
         return HttpResponse(template.render(context, request))

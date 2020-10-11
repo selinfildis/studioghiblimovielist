@@ -10,7 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
+import dj_database_url
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_redis",
+    "rest_framework",
     "movielist",
 ]
 
@@ -74,12 +77,9 @@ WSGI_APPLICATION = "studioghiblimovielist.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
+DISABLE_SERVER_SIDE_CURSORS = True
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": str(BASE_DIR / "db.sqlite3"),
-    }
+    "default": dj_database_url.config(default=os.environ.get("DB_CONN")),
 }
 
 
@@ -119,8 +119,20 @@ CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": os.environ.get("REDIS_CACHE", ""),
-        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {"max_connections": 500},
+        },
         "KEY_PREFIX": "example",
     }
 }
 CACHE_TTL = 45
+
+CELERY_BROKER_URL = os.environ.get("REDIS_CACHE", "")
+CELERY_RESULT_BACKEND = os.environ.get("REDIS_CACHE", "")
+CELERY_BEAT_SCHEDULE = {
+    "get_films_and_people": {
+        "task": "movielist.tasks.get_films_and_people",
+        "schedule": timedelta(seconds=30),
+    },
+}
