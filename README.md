@@ -23,7 +23,7 @@ My favorite bit :tada:
 2. `cd locust/` 
 3. Start locust by `locust` 
 4. nginx/web/redis should be up and running
-5. Log in to `http://127.0.0.1:8089/` and set the number of users to 500 and the relative fields.
+5. Log in to `http://127.0.0.1:8089/` and set the number of users to 300 and the relative fields.
 6. Let locust do it's thing 
 
 You can view the finite resources and the results in `locust_report.html`
